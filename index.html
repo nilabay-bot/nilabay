@@ -62,6 +62,13 @@ There is no algorithm.
 <li><a href="/dock/">south — the dock</a></li>
 </ul>
 
+    <hr>
+
+<p class="prompt">nilabay ></p>
+
+<input id="cmd" style="background:black;color:#33ff33;border:none;font-family:monospace;width:400px;">
+
+    
 <p>
 A small chipmunk watches you from the railing.
 </p>
@@ -75,4 +82,25 @@ A small chipmunk watches you from the railing.
 <p class="prompt">last updated: march 2026</p>
 
 </body>
+
+    <script>
+
+document.getElementById("cmd").addEventListener("keydown", function(e){
+
+if(e.key === "Enter"){
+
+let command = this.value.toLowerCase();
+
+if(command === "north") window.location="/cabin/";
+if(command === "east") window.location="/notes/";
+if(command === "west") window.location="/workshop/";
+if(command === "south") window.location="/dock/";
+
+this.value="";
+
+}
+
+});
+
+</script>
 </html>
