@@ -1,41 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <meta charset="UTF-8">
 <title>Nilabay</title>
 
-<style>
+<link rel="stylesheet" href="/css/style.css">
+<script src="/js/terminal.js"></script>
 
-body{
-background:#000;
-color:#33ff33;
-font-family:monospace;
-max-width:800px;
-margin:60px auto;
-line-height:1.6;
-}
-
-a{
-color:#66ff66;
-text-decoration:none;
-}
-
-a:hover{
-text-decoration:underline;
-}
-
-.prompt{
-color:#00ffcc;
-}
-
-</style>
 </head>
 
 <body>
 
 <p class="prompt">connect nilabay.com</p>
 
-<p>connection established</p>
+<div class="type">
 
 <pre>
 
@@ -51,6 +30,8 @@ There is no tracking.
 There is no algorithm.
 
 </pre>
+
+</div>
 
 <p>Exits:</p>
 
@@ -70,15 +51,15 @@ There is no algorithm.
 
 <p class="prompt">nilabay ></p>
 
-<input id="cmd" style="background:black;color:#33ff33;border:none;font-family:monospace;width:300px;">
+<input id="cmd">
 
 <script>
 
 document.getElementById("cmd").addEventListener("keydown", function(e){
 
-if(e.key === "Enter"){
+if(e.key==="Enter"){
 
-let c = this.value.toLowerCase();
+let c=this.value.toLowerCase();
 
 if(c==="north") window.location="/cabin/";
 if(c==="east") window.location="/notes/";
