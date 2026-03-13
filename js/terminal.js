@@ -1,7 +1,7 @@
-function typeWriter(element, speed=15){
+function typeWriter(element, speed = 15){
 
-let text = element.innerHTML;
-element.innerHTML = "";
+let text = element.textContent;
+element.textContent = "";
 
 let i = 0;
 
@@ -9,7 +9,7 @@ function typing(){
 
 if(i < text.length){
 
-element.innerHTML += text.charAt(i);
+element.textContent += text.charAt(i);
 i++;
 
 setTimeout(typing, speed);
