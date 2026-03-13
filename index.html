@@ -6,41 +6,39 @@
 
 <style>
 
-body {
-    background:#000;
-    color:#33ff33;
-    font-family: monospace;
-    max-width:800px;
-    margin:60px auto;
-    line-height:1.6;
+body{
+background:#000;
+color:#33ff33;
+font-family:monospace;
+max-width:800px;
+margin:60px auto;
+line-height:1.6;
 }
 
-a {
-    color:#66ff66;
-    text-decoration:none;
+a{
+color:#66ff66;
+text-decoration:none;
 }
 
-a:hover {
-    text-decoration:underline;
+a:hover{
+text-decoration:underline;
 }
 
-.prompt {
-    color:#00ffcc;
+.prompt{
+color:#00ffcc;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <p class="prompt">connect nilabay.com</p>
 
-<p>
-Connection established.
-</p>
+<p>connection established</p>
 
 <pre>
+
 Location: Nilabay Dock
 
 You arrive at a quiet inlet of the internet.
@@ -51,50 +49,42 @@ Pages drift here occasionally like boats arriving without schedule.
 There are no ads here.
 There is no tracking.
 There is no algorithm.
+
 </pre>
 
 <p>Exits:</p>
 
 <ul>
-<li><a href="/cabin/">north — cabin (essays)</a></li>
+<li><a href="/cabin/">north — cabin</a></li>
 <li><a href="/notes/">east — field notes</a></li>
 <li><a href="/workshop/">west — workshop</a></li>
-<li><a href="/dock/">south — the dock</a></li>
+<li><a href="/woods/">south — woods</a></li>
+<li><a href="/map/">map</a></li>
 </ul>
 
-    <hr>
+<p>A small chipmunk watches from the railing.</p>
 
-<p class="prompt">nilabay ></p>
-
-<input id="cmd" style="background:black;color:#33ff33;border:none;font-family:monospace;width:400px;">
-
-    
-<p>
-A small chipmunk watches you from the railing.
-</p>
-
-<p>
-<a href="/seeds/">leave seeds</a>
-</p>
+<p><a href="/seeds/">leave seeds</a></p>
 
 <hr>
 
-<p class="prompt">last updated: march 2026</p>
+<p class="prompt">nilabay ></p>
 
-</body>
+<input id="cmd" style="background:black;color:#33ff33;border:none;font-family:monospace;width:300px;">
 
-    <script>
+<script>
 
 document.getElementById("cmd").addEventListener("keydown", function(e){
 
 if(e.key === "Enter"){
 
-let command = this.value.toLowerCase();
+let c = this.value.toLowerCase();
 
-if(command === "north") window.location="/cabin/";
-if(command === "east") window.location="/notes/";
-if(command === "west") window.location="/workshop/";
-if(command === "south") window.location="/dock/";
+if(c==="north") window.location="/cabin/";
+if(c==="east") window.location="/notes/";
+if(c==="west") window.location="/workshop/";
+if(c==="south") window.location="/woods/";
+if(c==="map") window.location="/map/";
 
 this.value="";
 
@@ -103,4 +93,6 @@ this.value="";
 });
 
 </script>
+
+</body>
 </html>
