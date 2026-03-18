@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEMPO — Time Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: rgba(255,255,255,0.07);
+    --border-bright: rgba(255,255,255,0.14);
+    --accent: #c8f135;
+    --accent-dim: rgba(200,241,53,0.12);
+    --accent-glow: rgba(200,241,53,0.3);
+    --text: #f0f0f8;
+    --muted: #6b6b80;
+    --danger: #ff4f6a;
+    --danger-dim: rgba(255,79,106,0.12);
+    --blue: #5b8af5;
+    --blue-dim: rgba(91,138,245,0.12);
+    --orange: #ff8c42;
+    --purple: #a78bfa;
+  }
+
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(200,241,53,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 10% 80%, rgba(91,138,245,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .logo span { color: var(--accent); }
+
+  .total-today {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .total-today strong {
+    color: var(--accent);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-left: 8px;
+    letter-spacing: 0;
+  }
+
+  /* Timer Panel */
+  .timer-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s 0.08s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+  .timer-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .timer-panel.running::before { opacity: 1; }
+  .timer-panel.running {
+    border-color: rgba(200,241,53,0.2);
+    box-shadow: 0 0 40px rgba(200,241,53,0.05);
+  }
+
+  .timer-top {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .task-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .task-input::placeholder { color: var(--muted); }
+  .task-input:focus {
+    border-color: var(--border-bright);
+    box-shadow: 0 0 0 3px rgba(200,241,53,0.06);
+  }
+
+  .project-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    min-width: 140px;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b80' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .project-select:focus { border-color: var(--border-bright); }
+  .project-select option { background: #16161f; }
+
+  .timer-bottom {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .time-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    min-width: 200px;
+    transition: color 0.3s;
+    line-height: 1;
+  }
+  .timer-panel.running .time-display { color: var(--accent); }
+
+  .timer-actions {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .btn-start {
+    background: var(--accent);
+    color: #0a0a0f;
+    padding: 14px 28px;
+  }
+  .btn-start:hover {
+    background: #d8ff45;
+    box-shadow: 0 0 24px var(--accent-glow);
+    transform: translateY(-1px);
+  }
+  .btn-start:active { transform: translateY(0); }
+
+  .btn-stop {
+    background: var(--danger-dim);
+    color: var(--danger);
+    border: 1px solid rgba(255,79,106,0.2);
+    padding: 14px 28px;
+  }
+  .btn-stop:hover {
+    background: rgba(255,79,106,0.2);
+    box-shadow: 0 0 20px rgba(255,79,106,0.15);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--border-bright);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .btn-icon {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 10px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 32px;
+    animation: fadeUp 0.5s 0.16s ease both;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Entry List */
+  .entries {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .entry {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    gap: 16px;
+    transition: border-color 0.2s, transform 0.15s;
+    animation: slideIn 0.3s ease both;
+  }
+  .entry:hover {
+    border-color: var(--border-bright);
+    transform: translateX(2px);
+  }
+
+  .entry-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .entry-name {
+    flex: 1;
+    font-size: 0.9rem;
+    color: var(--text);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .entry-name small {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .entry-duration {
+    font-size: 0.88rem;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .entry-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .entry:hover .entry-actions { opacity: 1; }
+
+  .entry-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 0.8rem;
+  }
+  .entry-btn:hover {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--border-bright);
+  }
+  .entry-btn.delete:hover {
+    background: var(--danger-dim);
+    color: var(--danger);
+    border-color: rgba(255,79,106,0.3);
+  }
+  .entry-btn.resume:hover {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: rgba(200,241,53,0.3);
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s 0.12s ease both;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 20px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 0 0 14px 14px;
+  }
+  .stat-card.c1::after { background: var(--accent); }
+  .stat-card.c2::after { background: var(--blue); }
+  .stat-card.c3::after { background: var(--orange); }
+
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .c1 .stat-value { color: var(--accent); }
+  .c2 .stat-value { color: var(--blue); }
+  .c3 .stat-value { color: var(--orange); }
+
+  /* Projects */
+  .projects-header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .project-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 0.78rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .project-pill:hover, .project-pill.active {
+    border-color: var(--border-bright);
+    color: var(--text);
+    background: var(--surface2);
+  }
+  .project-pill .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  /* Add project */
+  .add-project-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .add-project-form input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .add-project-form input::placeholder { color: var(--muted); }
+  .add-project-form input:focus { border-color: var(--border-bright); }
+
+  /* Empty */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .empty .icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.4; }
+
+  /* Running dot */
+  .running-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.4s ease-in-out infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border-bright);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.82rem;
+    color: var(--text);
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 50;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    border-radius: 20px;
+    padding: 32px;
+    width: 400px;
+    max-width: 90vw;
+    animation: fadeUp 0.25s ease both;
+  }
+  .modal h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .modal-row { margin-bottom: 14px; }
+  .modal-row label { display: block; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .modal-row input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal-row input:focus { border-color: var(--border-bright); }
+  .color-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.selected { border-color: white; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+
+  /* Date group */
+  .date-group-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 20px 0 8px;
+  }
+  .date-group-label:first-child { margin-top: 0; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  @media (max-width: 600px) {
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .time-display { font-size: 2.2rem; }
+    .timer-top { flex-direction: column; }
+    .stat-card:last-child { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="logo">TEM<span>PO</span></div>
+    <div class="total-today">today <strong id="totalToday">0:00:00</strong></div>
+  </header>
+
+  <!-- Timer Panel -->
+  <div class="timer-panel" id="timerPanel">
+    <div class="timer-top">
+      <input type="text" class="task-input" id="taskInput" placeholder="What are you working on?">
+      <select class="project-select" id="projectSelect"></select>
+    </div>
+    <div class="timer-bottom">
+      <div class="time-display" id="timeDisplay">0:00:00</div>
+      <div class="timer-actions">
+        <button class="btn btn-start" id="startStopBtn" onclick="toggleTimer()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><polygon points="3,1 13,7 3,13"/></svg>
+          Start
+        </button>
+        <button class="btn btn-ghost btn-icon" title="Discard" onclick="discardTimer()" id="discardBtn" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card c1">
+      <div class="stat-label">Today</div>
+      <div class="stat-value" id="statToday">0h 0m</div>
+    </div>
+    <div class="stat-card c2">
+      <div class="stat-label">This Week</div>
+      <div class="stat-value" id="statWeek">0h 0m</div>
+    </div>
+    <div class="stat-card c3">
+      <div class="stat-label">Sessions</div>
+      <div class="stat-value" id="statSessions">0</div>
+    </div>
+  </div>
+
+  <!-- Projects -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-label">Projects</div>
+      <button class="btn btn-ghost" style="font-size:0.78rem;padding:7px 14px" onclick="openProjectModal()">+ Add</button>
+    </div>
+    <div id="projectPills" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+  </div>
+
+  <!-- Entries -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-label" id="entriesLabel">Recent Entries</div>
+      <button class="btn btn-ghost" style="font-size:0.78rem;padding:7px 14px;color:var(--danger)" onclick="clearAll()" id="clearBtn" style="display:none">Clear all</button>
+    </div>
+    <div id="entriesList"></div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Project Modal -->
+<div class="modal-overlay" id="projectModal">
+  <div class="modal">
+    <h3>New Project</h3>
+    <div class="modal-row">
+      <label>Project Name</label>
+      <input type="text" id="projectNameInput" placeholder="e.g. Client Website">
+    </div>
+    <div class="modal-row">
+      <label>Color</label>
+      <div class="color-swatches" id="colorSwatches"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-start" style="flex:1" onclick="saveProject()">Create Project</button>
+      <button class="btn btn-ghost" onclick="closeProjectModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────
+const COLORS = ['#c8f135','#5b8af5','#ff8c42','#a78bfa','#ff4f6a','#34d399','#f59e0b','#06b6d4','#ec4899','#8b5cf6'];
+
+let state = {
+  projects: [],
+  entries: [],
+  running: null, // { task, projectId, start }
+  selectedColor: COLORS[0],
+  filterProject: null,
+};
+
+let timerInterval = null;
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('tempo_state');
+    if (s) {
+      state = { ...state, ...JSON.parse(s) };
+      // Restore running timer start as Date
+      if (state.running) state.running.start = new Date(state.running.start);
+    }
+  } catch(e) {}
+  if (!state.projects.length) {
+    state.projects = [
+      { id: 'p1', name: 'Personal', color: '#5b8af5' },
+      { id: 'p2', name: 'Work', color: '#c8f135' },
+    ];
+  }
+}
+
+function saveState() {
+  localStorage.setItem('tempo_state', JSON.stringify(state));
+}
+
+// ── Helpers ────────────────────────────────────────────────────
+function uid() { return Math.random().toString(36).slice(2,10); }
+
+function fmt(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function fmtShort(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h === 0) return `${m}m`;
+  return `${h}h ${m}m`;
+}
+
+function elapsed(start) {
+  return Math.floor((Date.now() - new Date(start)) / 1000);
+}
+
+function today() { return new Date().toDateString(); }
+
+function startOfWeek() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay());
+  return d;
+}
+
+function getProject(id) {
+  return state.projects.find(p => p.id === id) || { name: 'No project', color: '#6b6b80' };
+}
+
+function totalToday() {
+  const entries = state.entries.filter(e => new Date(e.end).toDateString() === today());
+  return entries.reduce((a,e) => a + e.duration, 0);
+}
+
+function totalWeek() {
+  const cutoff = startOfWeek();
+  return state.entries.filter(e => new Date(e.end) >= cutoff).reduce((a,e) => a + e.duration, 0);
+}
+
+// ── Timer ──────────────────────────────────────────────────────
+function toggleTimer() {
+  if (state.running) {
+    stopTimer();
+  } else {
+    startTimer();
+  }
+}
+
+function startTimer() {
+  const task = document.getElementById('taskInput').value.trim() || 'Untitled task';
+  const projectId = document.getElementById('projectSelect').value;
+  state.running = { task, projectId, start: new Date() };
+  saveState();
+  timerInterval = setInterval(tickTimer, 1000);
+  renderTimerUI(true);
+}
+
+function stopTimer() {
+  if (!state.running) return;
+  const dur = elapsed(state.running.start);
+  if (dur < 2) { discardTimer(); return; }
+  const entry = {
+    id: uid(),
+    task: state.running.task,
+    projectId: state.running.projectId,
+    start: state.running.start,
+    end: new Date(),
+    duration: dur,
+  };
+  state.entries.unshift(entry);
+  state.running = null;
+  clearInterval(timerInterval);
+  saveState();
+  renderTimerUI(false);
+  renderEntries();
+  renderStats();
+  toast(`Logged: ${fmtShort(dur)}`);
+}
+
+function discardTimer() {
+  state.running = null;
+  clearInterval(timerInterval);
+  saveState();
+  renderTimerUI(false);
+}
+
+function tickTimer() {
+  if (!state.running) return;
+  const secs = elapsed(state.running.start);
+  document.getElementById('timeDisplay').textContent = fmt(secs);
+  document.getElementById('totalToday').textContent = fmt(totalToday() + secs);
+}
+
+function resumeEntry(id) {
+  const e = state.entries.find(x => x.id === id);
+  if (!e) return;
+  if (state.running) stopTimer();
+  document.getElementById('taskInput').value = e.task;
+  document.getElementById('projectSelect').value = e.projectId || '';
+  startTimer();
+}
+
+function deleteEntry(id) {
+  state.entries = state.entries.filter(e => e.id !== id);
+  saveState();
+  renderEntries();
+  renderStats();
+}
+
+function clearAll() {
+  if (!confirm('Delete all entries?')) return;
+  state.entries = [];
+  saveState();
+  renderEntries();
+  renderStats();
+}
+
+// ── Render ─────────────────────────────────────────────────────
+function renderTimerUI(running) {
+  const panel = document.getElementById('timerPanel');
+  const btn = document.getElementById('startStopBtn');
+  const discardBtn = document.getElementById('discardBtn');
+  const display = document.getElementById('timeDisplay');
+
+  if (running) {
+    panel.classList.add('running');
+    btn.innerHTML = `<svg width="12" height="14" viewBox="0 0 12 14" fill="currentColor"><rect x="0" y="0" width="4" height="14" rx="1"/><rect x="8" y="0" width="4" height="14" rx="1"/></svg> Stop`;
+    btn.className = 'btn btn-stop';
+    discardBtn.style.display = '';
+    document.getElementById('taskInput').value = state.running.task;
+  } else {
+    panel.classList.remove('running');
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><polygon points="3,1 13,7 3,13"/></svg> Start`;
+    btn.className = 'btn btn-start';
+    discardBtn.style.display = 'none';
+    display.textContent = '0:00:00';
+    document.getElementById('taskInput').value = '';
+    document.getElementById('totalToday').textContent = fmt(totalToday());
+  }
+}
+
+function renderProjectSelect() {
+  const sel = document.getElementById('projectSelect');
+  sel.innerHTML = '<option value="">No project</option>';
+  state.projects.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
+}
+
+function renderProjectPills() {
+  const container = document.getElementById('projectPills');
+  container.innerHTML = '';
+
+  const allPill = document.createElement('div');
+  allPill.className = 'project-pill' + (state.filterProject === null ? ' active' : '');
+  allPill.innerHTML = 'All';
+  allPill.onclick = () => { state.filterProject = null; renderProjectPills(); renderEntries(); };
+  container.appendChild(allPill);
+
+  state.projects.forEach(p => {
+    const pill = document.createElement('div');
+    pill.className = 'project-pill' + (state.filterProject === p.id ? ' active' : '');
+    const hours = fmtShort(state.entries.filter(e => e.projectId === p.id).reduce((a,e) => a + e.duration, 0));
+    pill.innerHTML = `<span class="dot" style="background:${p.color}"></span>${p.name} <span style="color:var(--muted);font-size:0.72rem">${hours}</span>`;
+    pill.onclick = () => {
+      state.filterProject = state.filterProject === p.id ? null : p.id;
+      renderProjectPills();
+      renderEntries();
+    };
+    container.appendChild(pill);
+  });
+}
+
+function renderEntries() {
+  const container = document.getElementById('entriesList');
+  const clearBtn = document.getElementById('clearBtn');
+  let entries = state.entries;
+  if (state.filterProject !== null) entries = entries.filter(e => e.projectId === state.filterProject);
+
+  document.getElementById('entriesLabel').textContent = state.filterProject
+    ? getProject(state.filterProject).name + ' Entries'
+    : 'Recent Entries';
+
+  clearBtn.style.display = state.entries.length ? '' : 'none';
+
+  if (!entries.length) {
+    container.innerHTML = `<div class="empty"><div class="icon">⏱</div>No entries yet.<br>Start the timer to track your time.</div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  entries.forEach(e => {
+    const label = new Date(e.end).toDateString() === today() ? 'Today' :
+      new Date(e.end).toDateString() === new Date(Date.now()-86400000).toDateString() ? 'Yesterday' :
+      new Date(e.end).toLocaleDateString('en-US', {weekday:'long', month:'short', day:'numeric'});
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(e);
+  });
+
+  container.innerHTML = '';
+  Object.entries(groups).forEach(([label, items]) => {
+    const groupTotal = items.reduce((a,e) => a + e.duration, 0);
+    const lbl = document.createElement('div');
+    lbl.className = 'date-group-label';
+    lbl.innerHTML = `${label} <span style="float:right;color:var(--text)">${fmtShort(groupTotal)}</span>`;
+    container.appendChild(lbl);
+
+    const list = document.createElement('div');
+    list.className = 'entries';
+    items.forEach(e => {
+      const proj = getProject(e.projectId);
+      const el = document.createElement('div');
+      el.className = 'entry';
+      el.innerHTML = `
+        <div class="entry-dot" style="background:${proj.color}"></div>
+        <div class="entry-name">
+          ${e.task}
+          <small>${proj.name}</small>
+        </div>
+        <div class="entry-duration">${fmt(e.duration)}</div>
+        <div class="entry-actions">
+          <button class="entry-btn resume" title="Resume" onclick="resumeEntry('${e.id}')">
+            <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor"><polygon points="1,1 9,6 1,11"/></svg>
+          </button>
+          <button class="entry-btn delete" title="Delete" onclick="deleteEntry('${e.id}')">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg>
+          </button>
+        </div>
+      `;
+      list.appendChild(el);
+    });
+    container.appendChild(list);
+  });
+}
+
+function renderStats() {
+  document.getElementById('statToday').textContent = fmtShort(totalToday());
+  document.getElementById('statWeek').textContent = fmtShort(totalWeek());
+  document.getElementById('statSessions').textContent = state.entries.length;
+  document.getElementById('totalToday').textContent = fmt(totalToday());
+}
+
+// ── Projects Modal ─────────────────────────────────────────────
+function openProjectModal() {
+  document.getElementById('projectNameInput').value = '';
+  state.selectedColor = COLORS[0];
+  renderSwatches();
+  document.getElementById('projectModal').classList.add('open');
+  setTimeout(() => document.getElementById('projectNameInput').focus(), 50);
+}
+
+function closeProjectModal() {
+  document.getElementById('projectModal').classList.remove('open');
+}
+
+function renderSwatches() {
+  const container = document.getElementById('colorSwatches');
+  container.innerHTML = '';
+  COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (c === state.selectedColor ? ' selected' : '');
+    s.style.background = c;
+    s.onclick = () => { state.selectedColor = c; renderSwatches(); };
+    container.appendChild(s);
+  });
+}
+
+function saveProject() {
+  const name = document.getElementById('projectNameInput').value.trim();
+  if (!name) { document.getElementById('projectNameInput').focus(); return; }
+  state.projects.push({ id: uid(), name, color: state.selectedColor });
+  saveState();
+  closeProjectModal();
+  renderProjectSelect();
+  renderProjectPills();
+  toast(`Project "${name}" created`);
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── Keyboard ───────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('projectModal').classList.contains('open')) {
+      closeProjectModal();
+    }
+  }
+  if (e.key === 'Enter' && document.getElementById('projectModal').classList.contains('open')) {
+    saveProject();
+  }
+  // Space to start/stop when not focused on input
+  if (e.key === ' ' && e.target === document.body) {
+    e.preventDefault();
+    toggleTimer();
+  }
+});
+
+document.getElementById('projectModal').addEventListener('click', function(e) {
+  if (e.target === this) closeProjectModal();
+});
+
+// ── Init ───────────────────────────────────────────────────────
+loadState();
+renderProjectSelect();
+renderProjectPills();
+renderEntries();
+renderStats();
+
+if (state.running) {
+  renderTimerUI(true);
+  timerInterval = setInterval(tickTimer, 1000);
+  tickTimer();
+}
+</script>
+</body>
+</html>
