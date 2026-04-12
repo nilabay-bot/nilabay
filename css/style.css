@@ -68,6 +68,11 @@ p {
     letter-spacing: -0.05em;
 }
 
+.logo a{
+    color: white;
+    text-decoration: none;
+}
+
 .main-nav a {
     color: white;
     text-decoration: none;
