@@ -1,15 +1,8 @@
 .main-banner {
-    /* Replace 'sturgeon-wallpaper.png' with your actual file path */
-    background-image: url('nilabay_beach.png');
-    
-    /* This ensures the image covers the area without distorting */
+    background-image: url('../nilabay_beach.png');    
     background-size: cover;
-    
-    /* Keeps the image centered as the window shrinks */
     background-position: center;
-    
-    /* Set the height of your banner */
-    height: 60vh; /* Takes up 60% of the screen height */
+    height: 60vh;
     width: 100%;
     
     display: flex;
@@ -18,7 +11,7 @@
 }
 
 body{
-        margin: 0;
+    margin: 0;
     padding: 0;
     overflow-x: hidden;
 }
