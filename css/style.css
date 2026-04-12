@@ -3,7 +3,6 @@
     --accent-blue: #00d2ff;
     --deep-bg: #0b0e14;
     --text-dim: #a0a0a0;
-    --glass: rgba(11, 14, 20, 0.7);
 }
 
 html {
@@ -16,7 +15,6 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: var(--deep-bg);
     color: white;
-    overflow-x: hidden;
 }
 
 /* --- Typography --- */
@@ -39,13 +37,20 @@ p {
 
 /* --- Navigation Header --- */
 .site-header {
-    position: absolute;
+    position: fixed; /* This makes it follow the viewer */
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 100;
-    padding: 2.5rem 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+    z-index: 1000; /* High z-index to stay above everything */
+    padding: 1.5rem 0; /* Slightly tighter padding for the sticky version */
+    
+    /* Subtle glass effect so it's readable over the white text sections */
+    background: rgba(11, 14, 20, 0.2); 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    
+    transition: all 0.3s ease;
 }
 
 .header-container {
@@ -59,7 +64,7 @@ p {
 
 .logo {
     font-weight: 700;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     letter-spacing: -0.05em;
 }
 
@@ -67,11 +72,11 @@ p {
     color: white;
     text-decoration: none;
     margin-left: 30px;
-    font-size: 0.85rem;
-    letter-spacing: 0.15em;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
     text-transform: lowercase;
-    opacity: 0.7;
-    transition: 0.3s;
+    opacity: 0.8;
+    transition: 0.3s ease;
 }
 
 .main-nav a:hover {
@@ -83,38 +88,42 @@ p {
 .main-banner {
     position: relative;
     height: 100vh;
+    width: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* Pushes the card to the bottom half */
     justify-content: center;
+    padding-bottom: 10vh; /* Keeps it from hitting the very bottom */
     overflow: hidden;
 }
-
 .main-banner::before {
     content: "";
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('../nilabay_beach.png');
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../nilabay_beach.png');
     background-size: cover;
     background-position: center;
-    z-index: -1;
+    z-index: 1;
 }
 
 .glass-card {
-    background: var(--glass);
-    backdrop-filter: blur(15px);
+    position: relative;
+    z-index: 2;
+    backdrop-filter: transparent;
     -webkit-backdrop-filter: blur(15px);
+    padding: 2rem;
+    border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 3rem;
-    border-radius: 20px;
     text-align: center;
-    max-width: 600px;
-    animation: fadeInUp 1s ease-out, breathe 5s ease-in-out infinite;
+    max-width: 450px; /* Slimmer card to show more background */
+    margin-bottom: 5vh; /* Moves it down to reveal the sturgeon in the sky */
 }
 
 .glow-text {
-    font-size: 3.5rem;
+    font-size: 2.2rem; /* Smaller font so the card isn't a giant block */
     margin-bottom: 0.5rem;
-    font-weight: 700;
 }
 
 .subtitle {
@@ -125,14 +134,13 @@ p {
 /* --- Buttons --- */
 .btn-primary {
     display: inline-block;
-    padding: 14px 35px;
+    padding: 12px 12px;
+    border: 1px solid white;
     color: white;
     text-decoration: none;
     border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.4);
-    background: transparent;
     transition: 0.3s;
-    font-weight: 400;
+        backdrop-filter: blur(15px);
 }
 
 .btn-primary:hover {
@@ -142,11 +150,19 @@ p {
 }
 
 /* --- Sections --- */
+section {
+    /* Adjust this value based on your header's height (approx 80px) */
+    scroll-margin-top: 80px; 
+}
 .philosophy-section {
-    padding: 160px 0;
+    padding: 200px 200px;
     text-align: center;
 }
-
+.philosophy-section h2 {
+    font-size: 2.5rem;
+    margin: 20px 0;
+    font-weight: 300;
+}
 .eyebrow {
     color: var(--accent-blue);
     text-transform: uppercase;
@@ -155,11 +171,7 @@ p {
     font-weight: 700;
 }
 
-.philosophy-section h2 {
-    font-size: 2.5rem;
-    margin: 20px 0;
-    font-weight: 300;
-}
+
 
 .grid {
     display: grid;
