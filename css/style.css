@@ -21,9 +21,13 @@ body{
 background:#000;
 color:#33ff33;
 font-family:monospace;
-max-width:800px;
-margin:60px auto;
-line-height:1.6;
+        margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+
 }
 
 a{
