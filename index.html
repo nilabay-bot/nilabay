@@ -1,44 +1,14 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <meta charset="UTF-8">
 <title>Nilabay</title>
-
 <link rel="stylesheet" href="/css/style.css">
-
 </head>
-
 <body>
-<header class="main-banner">
-    <div class="banner-content">
+    <header class="main-banner">
+        <div class="banner-content">
         </div>
-</header>
-<p class="prompt">connected nilabay.com</p>
-<p class="prompt">nilabay >
-<input id="cmd">
-</p>
-<script>
-
-document.getElementById("cmd").addEventListener("keydown", function(e){
-
-if(e.key==="Enter"){
-
-let c=this.value.toLowerCase();
-
-if(c==="north") window.location="/cabin/";
-if(c==="east") window.location="/notes/";
-if(c==="west") window.location="/workshop/";
-if(c==="south") window.location="/woods/";
-if(c==="map") window.location="/map/";
-
-this.value="";
-
-}
-
-});
-
-</script>
-
+    </header>
 </body>
 </html>
