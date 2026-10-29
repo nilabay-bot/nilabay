@@ -22,11 +22,46 @@
   -webkit-text-fill-color:transparent;
   color:transparent;
 }
+</style><style>
+/* Apple-inspired compact navigation on phones and small tablets. */
+.mobile-menu-toggle{display:none}
+@media(max-width:760px){
+nav{z-index:1000}
+nav .wrap{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:56px}
+nav .links{display:none!important;position:absolute;top:100%;left:0;right:0;background:#fafaf8;box-shadow:0 16px 24px rgba(20,25,35,.10);border-top:1px solid #e9e9ed;padding:10px 24px 24px;flex-direction:column;align-items:stretch;gap:0;z-index:1001}
+nav.menu-open .links{display:flex!important}
+nav .links a,nav .links a:not(.nav-cta){display:block!important;padding:15px 0;font-size:19px;line-height:1.3;font-weight:500;border-bottom:1px solid #e9e9ed;color:#1d1d1f;text-decoration:none}
+nav .links a.nav-cta{background:none;border-radius:0;box-shadow:none;padding:15px 0;color:#2868ed}
+.mobile-menu-toggle{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;background:transparent;color:#1d1d1f;cursor:pointer;border-radius:8px}
+.mobile-menu-toggle svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round}
+.mobile-menu-toggle .menu-close-icon{display:none}
+nav.menu-open .menu-open-icon{display:none}
+nav.menu-open .menu-close-icon{display:block}
+.mobile-menu-toggle:focus-visible{outline:2px solid #2868ed;outline-offset:2px}
+}
 </style></head><body>
-<nav aria-label="Primary"><div class="wrap"><a class="logo" href="/" aria-label="nilabay home">nilabay<span>.</span></a><div class="links"><a href="/#what-we-do">What we solve</a><a href="/#how-it-works">How it works</a><a href="/#pricing">Pricing</a><a href="/founders.html">Founders</a><a class="nav-cta" href="/#contact">Let's talk ↗</a></div></div></nav>
+<nav aria-label="Primary"><div class="wrap"><a class="logo" href="/" aria-label="nilabay home">nilabay<span>.</span></a><button class="mobile-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="primary-nav-links"><svg class="menu-open-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg><svg class="menu-close-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button><div class="links" id="primary-nav-links"><a href="/#what-we-do">What we solve</a><a href="/#how-it-works">How it works</a><a href="/#pricing">Pricing</a><a href="/founders.html">Founders</a><a class="nav-cta" href="/#contact">Let's talk ↗</a></div></div></nav>
 <main><section class="hero"><div class="kicker">The people behind nilabay</div><h1>Built on experience. Driven by purpose.</h1><p>Decades of engineering experience, a shared belief that technology should serve people, and a commitment to building solutions that make life better.</p></section>
 <section class="section"><div class="kicker">Our story</div><h2>Experienced minds.<br>Personal commitment.</h2><p class="lead">We started nilabay to bring experienced architecture and engineering and automation to businesses without the big consulting experience. We listen, design, build, and explain the work in plain English.</p><div class="founder-grid"><article class="person"><div class="symbol" aria-hidden="true">E</div><h3>Eric Liebler</h3><div class="role">Co-founder · Architecture & engineering</div><p>With over 20 years in engineering, including work in Fortune 500 environments, Eric designs and builds the architecture behind reliable business systems, including cloud, identity, and complex integrations. He focuses on solutions people can actually use and maintain.</p></article><article class="person"><div class="symbol" aria-hidden="true">M</div><h3>Mitch Ogden</h3><div class="role">Co-founder · Engineering & systems</div><p>With over 20 years in engineering and experience owning his own business, Mitch understands both how systems are built and what running a business demands. He engineers practical tools, integrations, and workflows that make day-to-day work easier.</p></article></div></section>
 <section class="section origin" aria-labelledby="origin-title"><div class="kicker">Why nilabay?</div><h2 id="origin-title">Born on the water.<br>Built for more life.</h2><p class="lead">The idea for nilabay began while paddleboarding on Little Traverse Bay in Northern Michigan, watching sunlight shimmer across the ripples.</p><p>As an early adopter of AI, I started wondering: what if technology could give people more time for the things that matter? Not just help businesses work faster, but free people to create, explore, build, and pursue what they love.</p><p>The name brings together <em>nīla</em>, a Sanskrit word associated with deep blue and sapphire, and Little Traverse Bay, where the idea began.</p><p>Today, we bring thoughtful engineering, practical technology, and AI where it makes sense to help people build better businesses and make more room for life.</p><p><strong>Because the point of better technology isn't more technology. It's more life.</strong></p></section>
 <div class="values"><section class="section"><div class="kicker">What we believe</div><h2>Do good work.<br>Keep your word.</h2><p class="lead">We'd rather earn your trust with one useful project than sell you something you don't need.</p><div class="values-grid"><div class="value"><h3>People before profit.</h3><p>We care about the people on the other side of every project.</p></div><div class="value"><h3>Tell the truth.</h3><p>If a project isn't worth doing, we'll say so.</p></div><div class="value"><h3>Build what matters.</h3><p>If the simple solution works, that's the one we'll build.</p></div></div></section></div>
 <section class="cta"><div class="kicker">Start a conversation</div><h2>Tell us what you're working on.</h2><p>Tell us what you're trying to fix. The first conversation is free.</p><a class="pill" href="mailto:hello@nilabay.com?subject=Let's%20talk%20about%20nilabay">Let's talk ↗</a></section></main>
-<footer class="footer" aria-label="Site footer"><div class="wrap"><a class="footer-brand" href="/" aria-label="nilabay home">nilabay<span>.</span></a><div class="footer-bottom"><span>© 2026 nilabay LLC</span><div class="right"><a href="/">Home</a><a href="/founders.html">Founders</a><a href="mailto:hello@nilabay.com">hello@nilabay.com</a></div></div></div></footer></body></html>
+<footer class="footer" aria-label="Site footer"><div class="wrap"><a class="footer-brand" href="/" aria-label="nilabay home">nilabay<span>.</span></a><div class="footer-bottom"><span>© 2026 nilabay LLC</span><div class="right"><a href="/">Home</a><a href="/founders.html">Founders</a><a href="mailto:hello@nilabay.com">hello@nilabay.com</a></div></div></div></footer><script>
+(function(){
+  const nav=document.querySelector('nav[aria-label="Primary"]');
+  const toggle=nav?.querySelector('.mobile-menu-toggle');
+  const links=nav?.querySelector('.links');
+  if(!nav||!toggle||!links)return;
+  function close(){nav.classList.remove('menu-open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation menu')}
+  toggle.addEventListener('click',function(){
+    const opening=!nav.classList.contains('menu-open');
+    nav.classList.toggle('menu-open',opening);
+    toggle.setAttribute('aria-expanded',String(opening));
+    toggle.setAttribute('aria-label',opening?'Close navigation menu':'Open navigation menu');
+  });
+  links.addEventListener('click',function(event){if(event.target.closest('a'))close()});
+  document.addEventListener('keydown',function(event){if(event.key==='Escape'&&nav.classList.contains('menu-open')){close();toggle.focus()}});
+  document.addEventListener('click',function(event){if(!nav.contains(event.target))close()});
+  window.addEventListener('resize',function(){if(window.innerWidth>760)close()});
+})();
+</script></body></html>
