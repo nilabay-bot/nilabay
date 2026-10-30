@@ -1,0 +1,25 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local dependencies and logs
+node_modules/
+*.log
+
+# Generated reports, exports, and backups
+/artifacts/
+/playwright-report/
+/test-results/
+/coverage/
+*.bundle
+*.bak
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
