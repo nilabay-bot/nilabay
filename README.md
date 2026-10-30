@@ -9,7 +9,6 @@ The public website for [nilabay](https://nilabay.com): practical engineering, co
 - `founders.html` — About page and the nilabay story (existing URL retained).
 - `css/marketing.css` — shared layout, navigation, typography, and footer.
 - `css/banners.css` — shared headline-only banners and wonder gradient.
-- `css/booking.css` and `js/booking.js` — in-site booking dialog and new-tab fallback.
 - `js/navigation.js` — mobile navigation.
 - `images/nilabay-*.svg` — brand assets.
 - `CNAME`, `robots.txt`, and `sitemap.xml` — domain and search configuration.
@@ -24,7 +23,7 @@ Use a web server rather than opening HTML files directly: shared assets use path
 
 Changes go through a pull request into `main`. GitHub Pages publishes the site at `nilabay.com`; check the Pages deployment result after merging. Preserve `CNAME` and the existing domain configuration.
 
-Before merging, review the changed pages on desktop and phone, check local links and navigation, and verify booking opens correctly. The booking dialog loads the public Google Calendar schedule on demand; the fallback opens the same booking destination in a new tab. No booking API credentials are stored in this repository.
+Before merging, review the changed pages on desktop and phone, and check local links and navigation. Contact links open an email to `hello@nilabay.com`; the site does not load a third-party booking calendar.
 
 ## Public repository
 
