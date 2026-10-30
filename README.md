@@ -6,7 +6,7 @@ The public website for [nilabay](https://nilabay.com): practical engineering, co
 
 - `index.html` — homepage.
 - `services.html` — services and how engagements work.
-- `founders.html` — founders and the nilabay story.
+- `founders.html` — About page and the nilabay story (existing URL retained).
 - `css/marketing.css` — shared layout, navigation, typography, and footer.
 - `css/banners.css` — shared headline-only banners and wonder gradient.
 - `css/booking.css` and `js/booking.js` — in-site booking dialog and new-tab fallback.
